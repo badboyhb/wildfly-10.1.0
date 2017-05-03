@@ -6,7 +6,7 @@ MAINTAINER HuBo <hubo@21cn.com>
 
 USER root
 
-RUN yum update -y && yum -y install openssh-server && yum clean all && echo "jboss:jboss" | chpasswd
+RUN yum update -y && yum -y install openssh-server && yum clean all
 
 RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key \
 	&& ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key \
@@ -54,4 +54,5 @@ VOLUME /opt/jboss/wildfly/standalone/deployments
 EXPOSE 22 8080 8443 9990
 
 CMD /usr/sbin/sshd -D
+
 
