@@ -8,6 +8,10 @@ USER root
 
 RUN yum update -y && yum -y install openssh-server && yum clean all && echo "jboss:jboss" | chpasswd
 
+RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key \
+	&& ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key \
+	&& ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key
+
 USER jboss
 
 # Set the WILDFLY_VERSION env variable
@@ -30,10 +34,7 @@ ENV JBOSS_CLI /opt/jboss/wildfly/bin/jboss-cli.sh -c
 
 RUN /opt/jboss/wildfly/bin/add-user.sh jboss jboss --silent
 
-RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key \
-	&& ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key \
-	&& ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key \
-	&& keytool -genkeypair -alias wildfly -keyalg RSA -keysize 2048 -keypass jbosswildfly -keystore /opt/jboss/wildfly/standalone/configuration/app.keystore -storepass jbosswildfly -dname "CN=HuBo,OU=wildfly,O=jboss,L=WH,ST=HB,C=CN" -validity 36500 -v
+RUN keytool -genkeypair -alias wildfly -keyalg RSA -keysize 2048 -keypass jbosswildfly -keystore /opt/jboss/wildfly/standalone/configuration/app.keystore -storepass jbosswildfly -dname "CN=HuBo,OU=wildfly,O=jboss,L=WH,ST=HB,C=CN" -validity 36500 -v
 
 RUN /opt/jboss/wildfly/bin/standalone.sh --admin-only & sleep 30 \
 	&& $JBOSS_CLI "module add --name=com.mysql --resources=$MYSQL_CONNECTOR/$MYSQL_CONNECTOR-bin.jar --dependencies=javax.api\,javax.transaction.api" \
