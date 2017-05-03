@@ -50,8 +50,6 @@ RUN /opt/jboss/wildfly/bin/standalone.sh --admin-only & sleep 30 \
 
 VOLUME /opt/jboss/wildfly/standalone/deployments
 
-USER root
-
 EXPOSE 22 8080 8443 9990
 
 CMD /usr/sbin/sshd -D
