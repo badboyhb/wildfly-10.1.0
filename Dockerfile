@@ -1,4 +1,4 @@
-# Version 0.0.3
+# Version 0.0.4
 
 FROM hubo/wildfly-jdk:latest
 
@@ -43,7 +43,7 @@ RUN /opt/jboss/wildfly/bin/standalone.sh --admin-only & sleep 30 \
 	&& $JBOSS_CLI "/core-service=management/security-realm=ApplicationRealm/server-identity=ssl:write-attribute(name=keystore-password,value=jbosswildfly)" \
 	&& $JBOSS_CLI "/core-service=management/security-realm=ApplicationRealm/server-identity=ssl:write-attribute(name=key-password,value=jbosswildfly)" \
 	&& $JBOSS_CLI "/core-service=management/security-realm=ApplicationRealm/server-identity=ssl:write-attribute(name=alias,value=wildfly)" \
-	&& $JBOSS_CLI "/subsystem=datasources/data-source=mysqluser:add(connection-url=jdbc:mysql://mysql:3306/wildfly?useSSL\=false,jndi-name=java:jboss/datasources/mysqluser,driver-name=mysql,user-name=jboss,password=jboss,enabled=true,use-ccm=true,jta=true)" \
+	&& $JBOSS_CLI "/subsystem=datasources/data-source=mysqluser:add(connection-url=jdbc:mysql://mysql:3306/wildfly?useSSL\=false&useUnicode\=true&characterEncoding\=utf-8&autoReconnect\=true&failOverReadOnly\=false,jndi-name=java:jboss/datasources/mysqluser,driver-name=mysql,user-name=jboss,password=jboss,enabled=true,use-ccm=true,jta=true)" \
 	&& $JBOSS_CLI "/subsystem=security/security-domain=mysqldomain:add(cache-type=default)" \
 	&& /usr/lib/jvm/java/bin/java -Djboss.modules.system.pkgs=com.sun.java.swing "-Dlogging.configuration=file:/opt/jboss/wildfly/bin/jboss-cli-logging.properties" -jar "/opt/jboss/wildfly/jboss-modules.jar" -mp "/opt/jboss/wildfly/modules" org.jboss.as.cli  '-c' "/subsystem=security/security-domain=mysqldomain/authentication=classic:add(login-modules=[{code=>Database, flag=>required,module-options=>[dsJndiName=>java:jboss/datasources/mysqluser,principalsQuery=>select passwd from Users where username=?,rolesQuery=>\"select role,'Roles' from UserRoles where username=?\",hashAlgorithm=>SHA-256,hashEncoding=>BASE64]}])" \
 	&& $JBOSS_CLI command=:shutdown \
