@@ -1,4 +1,4 @@
-# Version 0.0.2
+# Version 0.0.3
 
 FROM hubo/wildfly-jdk:latest
 
@@ -43,6 +43,7 @@ RUN /opt/jboss/wildfly/bin/standalone.sh --admin-only & sleep 30 \
 	&& $JBOSS_CLI "/core-service=management/security-realm=ApplicationRealm/server-identity=ssl:write-attribute(name=keystore-password,value=jbosswildfly)" \
 	&& $JBOSS_CLI "/core-service=management/security-realm=ApplicationRealm/server-identity=ssl:write-attribute(name=key-password,value=jbosswildfly)" \
 	&& $JBOSS_CLI "/core-service=management/security-realm=ApplicationRealm/server-identity=ssl:write-attribute(name=alias,value=wildfly)" \
+	&& $JBOSS_CLI "/subsystem=datasources/data-source=mysqluser:add(connection-url=jdbc:mysql://mysql:3306/wildfly?useSSL\=false,jndi-name=java:jboss/datasources/mysqluser,driver-name=mysql,user-name=jboss,password=jboss,enabled=true,use-ccm=true,jta=true)" \
 	&& $JBOSS_CLI command=:shutdown \
 	&& rm -rf $MYSQL_CONNECTOR.tar.gz \
 	&& rm -rf $MYSQL_CONNECTOR \
